@@ -119,17 +119,23 @@ int main()
 	
     print_board();
     int input;
-    cout << "Enter a column to play in (-1 to exit)> ";
-    cin >> input;
-
     while(input != -1) {
     	cout << "Enter a column to play in (-1 to exit)> ";
     	cin >> input;
+    	put_piece(input, 1);
+    	if (check_win(1)) {
+    		cout << "you win" << endl;
+    		print_board();
+    		break;
+    	}
+    	put_piece(get_ai_play(), -1);
+    	if (check_win(-1)) {
+    		cout << "ai wins" << endl;
+    		print_board();
+    		break;
+    	}
+    	print_board();
     }
-
-    if (check_win(1)) {
-		cout << "win" << endl;
-	}
 
     return 0;
 }
