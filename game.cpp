@@ -37,15 +37,21 @@ void print_board() {
 
 bool check_rows_cols(int num) {
 	for (int i=0; i<ROWS-3; i++) {
-		for (int j=0; j<COLS-3; j++) {
+		for (int j=0; j<COLS; j++) {
 			if (board[i][j] == num && board[i+1][j] == num && board[i+2][j] == num && board[i+3][j] == num) {
 				return true;
 			}
+		}
+	}
+
+	for (int i=0; i<ROWS; i++) {
+		for (int j=0; j<COLS-3; j++) {
 			if (board[i][j] == num && board[i][j+1] == num && board[i][j+2] == num && board[i][j+3] == num) {
 				return true;
 			}
 		}
 	}
+
 	return false;
 }
 
@@ -116,26 +122,55 @@ int main()
 			board[i][j] = 0;
 		}
 	}
+	cout << "Do you have another person to play with (y/n)> ";
+	string two_players;
+	cin >> two_players;
+	if (two_players == "y" || two_players == "Y") {
+		print_board();
+    	int input;
+    	while(input != -1) {
+	    	cout << "Player 1: Enter a column to play in (-1 to exit)> ";
+	    	cin >> input;
+	    	put_piece(input, 1);
+	    	if (check_win(1)) {
+	    		print_board();
+	    		cout << "player 1 wins" << endl;
+	    		break;
+	    	}
+	    	cout << "Player 2: Enter a column to play in (-1 to exit)> ";
+	    	cin >> input;
+	    	put_piece(input, -1);
+	    	if (check_win(-1)) {
+	    		print_board();
+	    		cout << "player 2 wins" << endl;
+	    		break;
+	    	}
+    		print_board();
+    	}
+	}
+	else {
+		print_board();
+    	int input;
+    	while(input != -1) {
+	    	cout << "Enter a column to play in (-1 to exit)> ";
+	    	cin >> input;
+	    	put_piece(input, 1);
+	    	if (check_win(1)) {
+	    		print_board();
+	    		cout << "you win" << endl;
+	    		break;
+	    	}
+	    	put_piece(get_ai_play(), -1);
+	    	if (check_win(-1)) {
+	    		print_board();
+	    		cout << "ai wins" << endl;
+	    		break;
+	    	}
+    		print_board();
+    	}
+	}
 	
-    print_board();
-    int input;
-    while(input != -1) {
-    	cout << "Enter a column to play in (-1 to exit)> ";
-    	cin >> input;
-    	put_piece(input, 1);
-    	if (check_win(1)) {
-    		cout << "you win" << endl;
-    		print_board();
-    		break;
-    	}
-    	put_piece(get_ai_play(), -1);
-    	if (check_win(-1)) {
-    		cout << "ai wins" << endl;
-    		print_board();
-    		break;
-    	}
-    	print_board();
-    }
+    
 
     return 0;
 }
