@@ -1,11 +1,10 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
+#include "game.h"
+#include "ai.cpp"
 
 using namespace std;
-
-#define COLS 7
-#define ROWS 6
 
 int board[ROWS][COLS];
 
@@ -35,93 +34,33 @@ void print_board() {
 	cout << endl;
 }
 
-bool check_rows_cols(int num) {
-	for (int i=0; i<ROWS-3; i++) {
-		for (int j=0; j<COLS; j++) {
-			if (board[i][j] == num && board[i+1][j] == num && board[i+2][j] == num && board[i+3][j] == num) {
-				return true;
-			}
-		}
+bool validate_input (string str_input) {
+	int input;
+	try {
+		input = stoi(str_input);
 	}
-
-	for (int i=0; i<ROWS; i++) {
-		for (int j=0; j<COLS-3; j++) {
-			if (board[i][j] == num && board[i][j+1] == num && board[i][j+2] == num && board[i][j+3] == num) {
-				return true;
-			}
-		}
+	catch (...) {
+		return false;
 	}
-
-	return false;
-}
-
-bool diagonals_helper(int i, int j, int row_inc, int col_inc, int num) {
-	for (int h=0; h<4; h++) {
-		// cout << (i + row_inc * h) << ", " << (j + col_inc * h) << endl;
-		// cout << board[i + row_inc * h][j + col_inc * h] << endl;
-		if (board[i + row_inc * h][j + col_inc * h] != num) {
-			return false;
-		}
+	if (input != -1 && input != 0 && input != 1 && input != 2 && input != 3 && input != 4 && input != 5 && input != 6) {
+		return false;
 	}
 	return true;
 }
 
-bool check_diagonals(int num) {
-	for (int i=0; i<ROWS; i++) {
-		for (int j=0; j<COLS; j++) {
-			//subset that can have right-tilted diagonals (+1)
-			if (j <= 3) {
-				//subset that can have down-tilted diagonals (+1)
-				if (i < 3) {
-					if (diagonals_helper(i, j, 1, 1, num)) {return true;}
-				}
-				//subset that can have up-tilted diagonals (-1)
-				else {
-					if (diagonals_helper(i, j, -1, 1, num)) {return true;}
-				}
-			}
-			//subset that can have left-tilted diagonals (-1)
-			if (j >= 3) {
-				//subset that can have down-tilted diagonals (+1)
-				if (i < 3) {
-					if (diagonals_helper(i, j, 1, -1, num)) {return true;}
-				}
-				//subset that can have up-tilted diagonals (-1)
-				else {
-					if (diagonals_helper(i, j, -1, -1, num)) {return true;}
-				}
-			}
-		}
-	}
-	return false;
+int get_input() {
+	string input;
+	cout << "Enter a column to play in (-1 to exit)> ";
+	cin >> input;
+
+	while(!validate_input(input)) {
+		cout << "Invalid. Enter a column to play in (-1 to exit)> ";
+		cin >> input;
+   }
+   return stoi(input);
 }
 
-bool check_win(int num) {
-	return check_rows_cols(num) || check_diagonals(num);
-}
-
-int put_piece(int col, int num) {
-	for (int i=ROWS-1; i>=0; i--) {
-		if (board[i][col] == 0) {
-			board[i][col] = num;
-			return 0;
-		}
-	}
-	return 1;
-}
-
-int get_ai_play() {
-	return rand() % 7;
-}
-
-int main()
-{
-	//initializing the board with 0s, which represent blank spots
-	for (int i=0; i<ROWS; i++) {
-		for (int j=0; j<COLS; j++) {
-			board[i][j] = 0;
-		}
-	}
+void main_game_loop() {
 	cout << "Do you have another person to play with (y/n)> ";
 	string two_players;
 	cin >> two_players;
@@ -129,18 +68,22 @@ int main()
 		print_board();
     	int input;
     	while(input != -1) {
-	    	cout << "Player 1: Enter a column to play in (-1 to exit)> ";
-	    	cin >> input;
-	    	put_piece(input, 1);
-	    	if (check_win(1)) {
+	    	cout << "Player 1: ";
+	    	input = get_input();
+	    	if (input == -1) {break;}
+	    	put_piece(input, PLAYER_ONE, board);
+	    	if (check_win(PLAYER_ONE, board)) {
 	    		print_board();
 	    		cout << "player 1 wins" << endl;
 	    		break;
 	    	}
-	    	cout << "Player 2: Enter a column to play in (-1 to exit)> ";
-	    	cin >> input;
-	    	put_piece(input, -1);
-	    	if (check_win(-1)) {
+	    	cout << endl;
+	    	print_board();
+	    	cout << "Player 2: ";
+	    	input = get_input();
+	    	if (input == -1) {break;}
+	    	put_piece(input, PLAYER_TWO, board);
+	    	if (check_win(PLAYER_TWO, board)) {
 	    		print_board();
 	    		cout << "player 2 wins" << endl;
 	    		break;
@@ -152,16 +95,16 @@ int main()
 		print_board();
     	int input;
     	while(input != -1) {
-	    	cout << "Enter a column to play in (-1 to exit)> ";
-	    	cin >> input;
-	    	put_piece(input, 1);
-	    	if (check_win(1)) {
+	    	input = get_input();
+	    	if (input == -1) {break;}
+	    	put_piece(input, PLAYER_ONE, board);
+	    	if (check_win(PLAYER_ONE, board)) {
 	    		print_board();
 	    		cout << "you win" << endl;
 	    		break;
 	    	}
-	    	put_piece(get_ai_play(), -1);
-	    	if (check_win(-1)) {
+	    	put_piece(get_ai_play(board), PLAYER_TWO, board);
+	    	if (check_win(PLAYER_TWO, board)) {
 	    		print_board();
 	    		cout << "ai wins" << endl;
 	    		break;
@@ -169,8 +112,18 @@ int main()
     		print_board();
     	}
 	}
-	
-    
+}
+
+int main()
+{
+	//initializing the board with 0s, which represent blank spots
+	for (int i=0; i<ROWS; i++) {
+		for (int j=0; j<COLS; j++) {
+			board[i][j] = 0;
+		}
+	}
+	main_game_loop();
+    //cout << test_method() << endl;
 
     return 0;
 }
