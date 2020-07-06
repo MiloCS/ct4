@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string>
 #include "game.h"
 
 bool check_rows_cols(int num, int board[ROWS][COLS]) {
@@ -74,4 +75,29 @@ int put_piece(int col, int num, int board[ROWS][COLS]) {
 		}
 	}
 	return 1;
+}
+
+std::string translate_piece(int num) {
+	if (num == 1) {
+		return "O";
+	}
+	else if (num == -1) {
+		return "X";
+	}
+	else {
+		return "_";
+	}
+}
+
+//function that prints out the board to the console
+void print_board(int board[ROWS][COLS]) {
+	std::cout << "  _____________________________" << std::endl;
+	for (int i=0; i<ROWS; i++) {
+		std::cout << "  |";
+		for (int j=0; j<COLS; j++) {
+			std::cout << "_" + translate_piece(board[i][j]) + "_|";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
 }

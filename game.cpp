@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include <stdlib.h>
 #include "game.h"
 #include "ai.cpp"
@@ -7,32 +6,6 @@
 using namespace std;
 
 int board[ROWS][COLS];
-
-
-string translate_piece(int num) {
-	if (num == 1) {
-		return "O";
-	}
-	else if (num == -1) {
-		return "X";
-	}
-	else {
-		return "_";
-	}
-}
-
-//function that prints out the board to the console
-void print_board() {
-	cout << "  _____________________________" << endl;
-	for (int i=0; i<ROWS; i++) {
-		cout << "  |";
-		for (int j=0; j<COLS; j++) {
-			cout << "_" + translate_piece(board[i][j]) + "_|";
-		}
-		cout << endl;
-	}
-	cout << endl;
-}
 
 bool validate_input (string str_input) {
 	int input;
@@ -65,7 +38,7 @@ void main_game_loop() {
 	string two_players;
 	cin >> two_players;
 	if (two_players == "y" || two_players == "Y") {
-		print_board();
+		print_board(board);
     	int input;
     	while(input != -1) {
 	    	cout << "Player 1: ";
@@ -73,43 +46,43 @@ void main_game_loop() {
 	    	if (input == -1) {break;}
 	    	put_piece(input, PLAYER_ONE, board);
 	    	if (check_win(PLAYER_ONE, board)) {
-	    		print_board();
+	    		print_board(board);
 	    		cout << "player 1 wins" << endl;
 	    		break;
 	    	}
 	    	cout << endl;
-	    	print_board();
+	    	print_board(board);
 	    	cout << "Player 2: ";
 	    	input = get_input();
 	    	if (input == -1) {break;}
 	    	put_piece(input, PLAYER_TWO, board);
 	    	if (check_win(PLAYER_TWO, board)) {
-	    		print_board();
+	    		print_board(board);
 	    		cout << "player 2 wins" << endl;
 	    		break;
 	    	}
-    		print_board();
+    		print_board(board);
     	}
 	}
 	else {
-		print_board();
+		print_board(board);
     	int input;
     	while(input != -1) {
 	    	input = get_input();
 	    	if (input == -1) {break;}
 	    	put_piece(input, PLAYER_ONE, board);
 	    	if (check_win(PLAYER_ONE, board)) {
-	    		print_board();
+	    		print_board(board);
 	    		cout << "you win" << endl;
 	    		break;
 	    	}
 	    	put_piece(get_ai_play(board), PLAYER_TWO, board);
 	    	if (check_win(PLAYER_TWO, board)) {
-	    		print_board();
+	    		print_board(board);
 	    		cout << "ai wins" << endl;
 	    		break;
 	    	}
-    		print_board();
+    		print_board(board);
     	}
 	}
 }
